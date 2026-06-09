@@ -82,7 +82,7 @@ void get_mu_LJ()
   {
     mu[i]+= -alphaLJ*eps[i*Nspecies+j]*rhob[j];
   }
-  printf("%f\n",mu[0]);
+  
 }
 
 void getc1_LJ()

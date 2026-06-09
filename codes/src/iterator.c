@@ -74,10 +74,17 @@ void write_rho(double elapsed,int iter)
   char template_name[250]="rhob%d_%f";
   char tempname[128];
   
-	sprintf(fname,"../data/rho1Dew%fdx%fL%f",ew,dx,Lx);
+	sprintf(fname,"../data/rho1Ddx%fL%f",dx,Lx);
 	for(int i=0;i<Nspecies;i++)
 	{
 	  sprintf(tempname,template_name,i+1,rhob[i]);
+	  strcat(fname,tempname);
+	}
+	
+	strcpy(template_name,"ew%d_%f");
+	for(int i=0;i<Nspecies;i++)
+	{
+	  sprintf(tempname,template_name,i+1,ew[i]);
 	  strcat(fname,tempname);
 	}
 	

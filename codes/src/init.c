@@ -13,7 +13,7 @@
 
 int Nspecies=0;
 double eta=0.0;
-double ew=0.;
+double *ew=NULL;
 double *rho=NULL;
 double *rhonew=NULL;
 double *Vext=NULL;
@@ -41,6 +41,7 @@ void initialize_dataframes()
   
   c1_bulk=malloc(Nspecies * sizeof(double));
   rhob=malloc(Nspecies * sizeof(double));
+  ew=malloc(Nspecies * sizeof(double));
   mu=malloc(Nspecies * sizeof(double));
   
   
@@ -67,6 +68,7 @@ void initialize_dataframes()
   
   initialize_val(c1_bulk,Nspecies,0.);
   initialize_val(rhob,Nspecies,0.);
+  initialize_val(ew,Nspecies,0.);
   initialize_val(mu,Nspecies,0.);
   
 }
@@ -78,7 +80,7 @@ void initialize_Vext()
   {
     for(int j=0;j<Nspecies;j++)
       {
-        Vext[IDX(j,i)]=ew*(2./15*pow(dx*i,-9)-pow(dx*i,-3));
+        Vext[IDX(j,i)]=ew[j]*(2./15*pow(dx*i,-9)-pow(dx*i,-3));
       }
   }
   
@@ -167,9 +169,8 @@ void read_params_system()
     
     
     while (fgets(line, sizeof(line), fp)) 
-    {
-      if (sscanf(line, "ew=%lf", &ew) == 1) continue;
-      
+    {      
+      //read eps
       if (strncmp(line, "eps", 3) == 0)
       {
         LJ_exists=1;
@@ -193,6 +194,27 @@ void read_params_system()
         
       }
       
+      //read ew
+      if (strncmp(line, "ew", 2) == 0)
+        {
+          char *p = strchr(line, '[');
+          if (p)
+          {
+            p++;
+
+            for (int i = 0; i < Nspecies; i++)
+            {
+                ew[i] = strtod(p, &p);
+
+                while (*p == ' ' || *p == ',')
+                    p++;
+            }
+          }
+
+          continue;
+        }
+      
+      //read rhob
       if (strncmp(line, "rhob", 4) == 0)
         {
           char *p = strchr(line, '[');

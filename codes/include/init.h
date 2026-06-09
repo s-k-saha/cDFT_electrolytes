@@ -12,7 +12,7 @@ extern double *mu;
 extern double *rhonew;
 extern double *rhocopy;
 extern double *Vext;
-extern double ew;
+extern double *ew;
 extern double *c1; //one-body effective potential due to interactions
 extern double *c1_temp;
 extern double *c1_bulk; //one-body effective potential due to interactions at the bulk Vext=0

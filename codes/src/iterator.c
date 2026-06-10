@@ -179,7 +179,7 @@ void write_rho(double elapsed, int iter)
                     c1[IDX(j, i)]);
 
         if (ES_exists)
-            fprintf(F, "%f ", (i < N_ES) ? psi[i] : 0.0);
+            fprintf(F, "%f ", ((i >= NiR) && (i <= iend) ) ? psi[i-NiR] : 0.0);
 
         fprintf(F, "\n");
     }

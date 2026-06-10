@@ -17,9 +17,13 @@ extern double *c1; //one-body effective potential due to interactions
 extern double *c1_temp;
 extern double *c1_bulk; //one-body effective potential due to interactions at the bulk Vext=0
 
+extern double *rhobL;
+extern double *rhobG;
+
 extern int LJ_exists;
 extern int ES_exists;
-
+extern int LG_exists;
+extern double h_target;
 
 void read_params_geometry();
 void initialize_dataframes();

@@ -26,8 +26,13 @@ double *c1_bulk=NULL;// equals mu_ex
 double *rhob=NULL;
 double *mu=NULL;
 
-int LJ_exists=0;
-int ES_exists=0;
+double *rhobL=NULL;
+double *rhobG=NULL;
+
+int LJ_exists=0;//checks for LJ interactions in the system
+int ES_exists=0;//checks for ES interactions in the system
+int LG_exists=0;//checks for Liquid-Gas co-existence in the system
+double h_target=0.;//target adsorption film height (only if Liquid-Gas interface forms) (Gamma=h*(rhobL-rhobG)) see (Archer et al. 2017) https://doi.org/10.1063/1.4974832
 
 void initialize_dataframes()
 {
@@ -105,6 +110,7 @@ void initialize_rho()
       }
   }
   
+  if(LG_exists==0)
   for(int i=NiR;i<N;i++)
   {
     for(int j=0;j<Nspecies;j++)
@@ -113,7 +119,28 @@ void initialize_rho()
         
       }
   }
-  
+  else
+  {
+    int h_target_N = (int)(h_target/dx);
+    //left half init wil rhoL_bulk*exp(-Vext)
+    for(int i=NiR;i<h_target_N;i++)
+    {
+      for(int j=0;j<Nspecies;j++)
+        {
+          rho[IDX(j,i)]=rhobL[j]*exp(-Vext[IDX(j,i)]);
+        }
+    }
+    
+    //right half init wil rhoL_bulk*exp(-Vext)
+    for(int i=h_target_N;i<N;i++)
+    {
+      for(int j=0;j<Nspecies;j++)
+        {
+          rho[IDX(j,i)]=rhobG[j]*exp(-Vext[IDX(j,i)]);
+        }
+    }
+    
+  }  
   //printf("%f %f\n",rho[IDX(0,N/2)],rho[IDX(1,N/2)]);
 }
 
@@ -195,6 +222,59 @@ void read_params_system()
           continue;
         
       }
+      
+      //read h_target
+      if (sscanf(line, "h_target=%lf",&h_target) == 1) continue;
+      
+      //read rhobL and allocates memory for rhobG
+      if (strncmp(line, "rhobL", 5) == 0)
+      {
+        LG_exists=1;
+        
+        rhobL=malloc(Nspecies * sizeof(double));
+        rhobG=malloc(Nspecies * sizeof(double));
+        
+        char *p = strchr(line, '[');
+          if (p)
+          {
+            p++;
+
+            for (int i = 0; i < Nspecies; i++)
+            {
+                rhobL[i] = strtod(p, &p);
+
+                while (*p == ' ' || *p == ',')
+                    p++;
+            }
+          }
+
+          continue;
+        
+      }
+      
+      //read rhobG
+      if (strncmp(line, "rhobG", 5) == 0)
+      {
+        char *p = strchr(line, '[');
+          if (p)
+          {
+            p++;
+
+            for (int i = 0; i < Nspecies; i++)
+            {
+                rhobG[i] = strtod(p, &p);
+                rhob[i] = rhobG[i]; //The right end of the box is fixed at rhobG (bulk gas density)
+                
+                while (*p == ' ' || *p == ',')
+                    p++;
+            }
+          }
+
+          continue;
+        
+      }
+      
+      
       
       //read q
       if (strncmp(line, "q", 1) == 0)

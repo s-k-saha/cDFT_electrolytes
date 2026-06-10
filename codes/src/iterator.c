@@ -52,12 +52,20 @@ void iterate()
   if(ES_exists)
   getc1_ES();
   
+  if(LG_exists==0)
   for(int j=0;j<Nspecies;j++)
   for(int i=0;i<iend;i++)
 	{	
 		rhonew[IDX(j,i)]=rhob[j]*exp(-Vext[IDX(j,i)]+c1[IDX(j,i)]-c1_bulk[j]);
 	}
+	else
+	for(int j=0;j<Nspecies;j++)
+  for(int i=0;i<iend;i++)
+	{	
+		rhonew[IDX(j,i)]=exp(-Vext[IDX(j,i)]+c1[IDX(j,i)]+mu[j]);
+	}
 	
+	if(LG_exists==0)
 	for(int j=0;j<Nspecies;j++)
   {
     dev[j]=0.;
@@ -66,10 +74,36 @@ void iterate()
 	  dev[j]*=dx;
 	}
 	
-	
+	if(LG_exists==0)
   for(int i=0;i<iend;i++)
 	  for(int j=0;j<Nspecies;j++)
 		  rho[IDX(j,i)]=(1-alpha)*rho[IDX(j,i)]+alpha*rhonew[IDX(j,i)];
+  else
+  {
+    for(int j=0;j<Nspecies;j++)
+    {
+      dev[j]=0.;
+      double Gamma_new=0.;
+      for(int i=NiR;i<iend;i++)
+      {
+		    rhonew[IDX(j,i)]=(1-alpha)*rho[IDX(j,i)]+alpha*rhonew[IDX(j,i)];
+		    Gamma_new+=(rhonew[IDX(j,i)]-rhobG[j]);
+      }
+      
+      Gamma_new*=dx;
+      double factor=(h_target*(rhobL[j]-rhobG[j]))/Gamma_new;
+        
+      for(int i=NiR;i<iend;i++)
+      {
+		    rhonew[IDX(j,i)]=factor*(rhonew[IDX(j,i)]-rhobG[j])+ rhobG[j];
+		    dev[j]+=fabs(rhonew[IDX(j,i)]-rho[IDX(j,i)]);
+		    rho[IDX(j,i)]=rhonew[IDX(j,i)];
+      }
+      dev[j]*=dx;
+    }
+  }
+    
+  
 }
 
 
@@ -103,13 +137,23 @@ void write_rho(double elapsed, int iter)
         sprintf(tempname, template_name, lambdaB, Vq, BC);
         strcat(fname, tempname);
     }
-
+    
+    if (LG_exists)
+    {
+        strcpy(template_name, "h_target%f");
+        sprintf(tempname, template_name, h_target);
+        strcat(fname, tempname);
+    }
+    
     if (LJ_exists)
         strcat(fname, "_LJ");
 
     if (ES_exists)
         strcat(fname, "_ES");
-
+    
+    if (LG_exists)
+        strcat(fname, "_LG");
+        
     strcat(fname, ".dat");
     
     strcpy(outname,fname);
@@ -154,7 +198,18 @@ void write_rho(double elapsed, int iter)
     }
 
     fprintf(F, "%s\n", fname);
-
+    
+    
+    if (LG_exists)
+    {
+      fname[0] = '\0';
+      strcpy(template_name, "h_target :%f; ");
+      sprintf(tempname, template_name, h_target);
+      strcat(fname, tempname);
+      fprintf(F, "%s\n", fname);
+    }
+    
+    
     if (LJ_exists)
     {
         fname[0] = '\0';
@@ -211,97 +266,4 @@ void write_rho(double elapsed, int iter)
 }
 
 
-/*
-void write_rho(double elapsed,int iter)
-{
-  //naming the output datafile
-  char fname[1024];
-  char template_name[250]="rhob%d_%f";
-  char tempname[128];
-  
-	sprintf(fname,"../data/rho1Ddx%fL%f",dx,Lx);
-	for(int i=0;i<Nspecies;i++)
-	{
-	  sprintf(tempname,template_name,i+1,rhob[i]);
-	  strcat(fname,tempname);
-	}
-	
-	strcpy(template_name,"ew%d_%f");
-	for(int i=0;i<Nspecies;i++)
-	{
-	  sprintf(tempname,template_name,i+1,ew[i]);
-	  strcat(fname,tempname);
-	}
-	
-	if(ES_exists)
-	{
-	  strcpy(template_name,"lambdaB%fVq%fBC%s");
-	  sprintf(tempname,template_name,lambdaB,Vq,BC);
-	  strcat(fname,tempname);
-	}
-	
-	if(LJ_exists)
-	strcat(fname,"_LJ");
-	
-	if(ES_exists)
-	strcat(fname,"_ES");
-	
-	strcat(fname,".dat");
-	
-	
-	//writing to file
-	FILE *F=fopen(fname,"w");
-	for(int i=0;i<N;i++)
-	{
-	  fprintf(F,"%d %f ",i,dx*i);
-	  for(int j=0;j<Nspecies;j++)
-		  fprintf(F,"%f %f ",rho[IDX(j,i)],c1[IDX(j,i)]);
-		
-		if(ES_exists)
-		fprintf(F,"%f ",(i<N_ES)?psi[i]:0.0);
-		fprintf(F,"\n");
-	}
-	
-	fprintf(F,"------------------\n%d x %d cycles time: %f s\n",Nbatch,iter,elapsed);
-	
-	strcpy(fname,"");
-	strcpy(template_name,"mu[%d] :%f; ");
-	for(int i=0;i<Nspecies;i++)
-	{
-	  sprintf(tempname,template_name,i,mu[i]);
-	  strcat(fname,tempname);
-	}
-	fprintf(F,fname);
-	fprintf(F,"\n");
-	
-	
-	if(LJ_exists)
-	{
-	  strcpy(fname,"");
-	  strcpy(template_name,"eps[%d][%d] :%f; ");
-	  for(int i=0;i<Nspecies;i++)
-	  for(int j=i;j<Nspecies;j++)
-	  {
-	    sprintf(tempname,template_name,i,j,eps[i*Nspecies+j]);
-	    strcat(fname,tempname);
-	  }
-	  fprintf(F,fname);
-	  fprintf(F,"\n");
-	}
-	
-	strcpy(fname,"");
-	strcpy(template_name,"dev[%d] :%f; ");
-	for(int i=0;i<Nspecies;i++)
-	{
-	  sprintf(tempname,template_name,i,dev[i]);
-	  strcat(fname,tempname);
-	}
-	fprintf(F,fname);
-	fprintf(F,"\n");
-	
-	
-	
-	
-	fclose(F);
-}
-*/
+

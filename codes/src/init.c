@@ -8,6 +8,7 @@
 #include "../include/utils.h"
 #include "../include/functional_fmt.h"
 #include "../include/functional_LJ.h"
+#include "../include/functional_ES.h"
 #include "../include/iterator.h"
 
 
@@ -26,6 +27,7 @@ double *rhob=NULL;
 double *mu=NULL;
 
 int LJ_exists=0;
+int ES_exists=0;
 
 void initialize_dataframes()
 {
@@ -193,6 +195,39 @@ void read_params_system()
           continue;
         
       }
+      
+      //read q
+      if (strncmp(line, "q", 1) == 0)
+      {
+        ES_exists=1;
+        initialize_ES_df();
+        
+        char *p = strchr(line, '[');
+          if (p)
+          {
+            p++;
+
+            for (int i = 0; i < Nspecies; i++)
+            {
+                q[i] = strtod(p, &p);
+
+                while (*p == ' ' || *p == ',')
+                    p++;
+            }
+          }
+
+          continue;
+        
+      }
+      
+      //read BC string
+      if (sscanf(line, "BC=%s", BC) == 1) continue;
+      
+      //read lambdaB
+      if (sscanf(line, "lambdaB=%lf", &lambdaB) == 1) continue;
+      
+       //read Vq
+      if (sscanf(line, "Vq=%lf", &Vq) == 1) continue;
       
       //read ew
       if (strncmp(line, "ew", 2) == 0)

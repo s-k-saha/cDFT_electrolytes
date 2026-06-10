@@ -11,5 +11,6 @@ void initialize_utils();
 void conv_FFT(double*, fftw_complex*,double*);
 void add_c(double*, double*);
 double getMax(double*,int);
+void poisson_1D(double,int,double,double,double*,double*,const char*);
 
 #endif

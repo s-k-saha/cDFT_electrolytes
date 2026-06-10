@@ -11,6 +11,7 @@
 #include "../include/utils.h"
 #include "../include/functional_fmt.h"
 #include "../include/functional_LJ.h"
+#include "../include/functional_ES.h"
 #include "../include/iterator.h"
 
 

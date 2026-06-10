@@ -3,7 +3,8 @@
 
 
 extern double lambdaB;
-extern double Vq;
+extern double Vq_L;
+extern double Vq_R;
 extern double *q;
 extern double *phi;
 extern double *psi;

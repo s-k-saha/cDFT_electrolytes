@@ -133,8 +133,8 @@ void write_rho(double elapsed, int iter)
 
     if (ES_exists)
     {
-        strcpy(template_name, "lambdaB%fVq%fBC%s");
-        sprintf(tempname, template_name, lambdaB, Vq, BC);
+        strcpy(template_name, "lambdaB%fVq_L%fVq_R%fBC%s");
+        sprintf(tempname, template_name, lambdaB, Vq_L,Vq_R, BC);
         strcat(fname, tempname);
     }
     

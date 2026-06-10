@@ -306,8 +306,11 @@ void read_params_system()
       //read lambdaB
       if (sscanf(line, "lambdaB=%lf", &lambdaB) == 1) continue;
       
-       //read Vq
-      if (sscanf(line, "Vq=%lf", &Vq) == 1) continue;
+       //read Vq_L
+      if (sscanf(line, "Vq_L=%lf", &Vq_L) == 1) continue;
+      
+      //read Vq_R
+      if (sscanf(line, "Vq_R=%lf", &Vq_R) == 1) continue;
       
       //read ew
       if (strncmp(line, "ew", 2) == 0)

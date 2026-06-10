@@ -13,7 +13,8 @@
 
 
 double lambdaB=0.;
-double Vq=0.;
+double Vq_L=0.;
+double Vq_R=0.;
 double *q=NULL;
 double *phi=NULL;
 double *psi=NULL;
@@ -47,7 +48,7 @@ void getc1_ES()
   }
   
   
-  poisson_1D(dx, N_ES,Vq,0.,phi,psi,BC);
+  poisson_1D(dx, N_ES,Vq_L,Vq_R,phi,psi,BC);
   
   /*
   FILE *t_w=fopen("../data/psi.dat","w");

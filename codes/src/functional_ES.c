@@ -27,7 +27,7 @@ void initialize_ES_df()
   lambdaB=0.0;
   q=malloc(Nspecies*sizeof(double));
   
-  N_ES=(iend-NiR+1);
+  N_ES=iend+1;//(iend-NiR+1);
   
   phi=malloc(N_ES*sizeof(double));
   psi=malloc(N_ES*sizeof(double));
@@ -44,11 +44,14 @@ void getc1_ES()
   for(int i=0;i<N_ES;i++)
   {
     for(int j=0;j<Nspecies;j++)
-    phi[i]+=-q[j]*rho[IDX(j,i+NiR)];
+    phi[i]+=q[j]*lambdaB*rho[IDX(j,i)];
   }
   
-  
+  if(strcmp(BC, "NN") != 0)
   poisson_1D(dx, N_ES,Vq_L,Vq_R,phi,psi,BC);
+  else
+  psi_calculator(dx,N_ES,Vq_L,Vq_R,phi,psi);
+  
   
   /*
   FILE *t_w=fopen("../data/psi.dat","w");
@@ -61,6 +64,6 @@ void getc1_ES()
   for(int i=0;i<Nspecies;i++)
   for(int j=NiR;j<=iend;j++)
   {
-    c1[IDX(i,j)]+=lambdaB*(-q[i])*psi[j-NiR];
+    c1[IDX(i,j)]+=(q[i])*psi[j];
   }
 }

@@ -217,6 +217,34 @@ void poisson_1D(double h,
     free(dprime);
 }
 
+//Backward sweep-implementation of poisson solver (only works when system is net-electrically neutral and L is large enough such that charge density becomes 0 much before L)
+void psi_calculator(double h,
+                int Nt,
+                double psi_left,
+                double psi_right,
+                double *phi,
+                double *psi)
+{
+  double M_end=0,Q_end=0,x;
+  Q_end = 0.0;
+  M_end = 0.0;
+
+  for(int i=Nt-2;i>=0;i--)
+  {
+      x = h*i;
+
+      Q_end += phi[i]*h;
+      M_end += x*phi[i]*h;
+
+      psi[i] = psi_right - (M_end - x*Q_end);
+  }
+
+  psi[Nt-1] = psi_right;
+    
+  //diagonistic tool, Q(NiR)=0.0 implies solver works as desired 
+  //printf("Q_end:%f\n",Q_end);
+}
+
 
 /*
 void poisson_1D(double h, int Nt,

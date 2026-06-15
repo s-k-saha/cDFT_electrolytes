@@ -81,6 +81,26 @@ void getc1_ES()
   for(int i=0;i<Nspecies;i++)
   for(int j=NiR;j<=iend;j++)
   {
-    c1[IDX(i,j)]+=(q[i])*psi[j];
+    c1[IDX(i,j)]-=(q[i])*psi[j];
   }
+  
+  
+  
+  //ideal contribution to the solvent density due to Polarization coupling
+  if(Is_polar)
+  {
+    double temp=0.;
+    for(int j=NiR;j<=iend;j++)
+    {
+      //printf("\n%lf %lf %lf\n",j*dx,P[j],rho[IDX(0,j)]);
+      temp=inv_langevin(P[j]/(p*rho[IDX(0,j)]));
+      //printf("\n%lf\n",temp);
+      //if (isnan(temp)) exit(1);
+      
+      c1[IDX(0,j)]-= (fabs(temp)<=1.0e-8)? -log(1.+temp*temp/6.):log(temp/(sinh(temp))) ;
+      
+      //printf("\n%lf\n",(fabs(temp)<=1.0e-8)? -log(1.+temp*temp/6.):log(temp/(sinh(temp))));
+    }
+  }
+  
 }

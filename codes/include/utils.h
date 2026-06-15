@@ -15,5 +15,6 @@ void poisson_1D(double,int,double,double,double*,double*,const char*);
 void psi_calculator(double,int,double,double,double*,double*);
 void psi_calculator_P(double,int,double,double,double*,double*,double*,double*,double);
 double langevin(double);
+double inv_langevin(double);
 
 #endif

@@ -305,6 +305,82 @@ double langevin(double x)
 }
 
 
+//fast rational approximation
+double inv_langevin(double y)
+{
+    if (isnan(y)) return NAN;
+    if (y >=  1.0) return INFINITY;
+    if (y <= -1.0) return -INFINITY;
+
+    double ay = fabs(y);
+
+    double y2 = y * y;
+    double y4 = y2 * y2;
+    double y6 = y4 * y2;
+    double y8 = y4 * y4;
+
+    double num =
+          3.0
+        - 1.00651  * y2
+        - 0.962251 * y4
+        + 1.47353  * y6
+        - 0.48953  * y8;
+
+    double den =
+        (1.0 - ay) * (1.0 + 1.01524 * ay);
+    
+    //printf("\n%lf\n",y * num / den);
+    return y * num / den;
+}
+
+
+/*
+//more accurate a bit slower approxmation
+double inv_langevin(double y)
+{
+    if (isnan(y)) return NAN;
+    if (y >=  1.0) return INFINITY;
+    if (y <= -1.0) return -INFINITY;
+    if (y == 0.0) return 0.0;
+
+    double s = copysign(1.0, y);
+    double a = fabs(y);
+
+    
+    //    Fast rational initial guess.
+    //    Captures both:
+    //        L^{-1}(y) ~ 3y near 0
+    //        L^{-1}(y) ~ 1/(1-y) near 1
+    
+    double x = a * (3.0 - a*a) / (1.0 - a*a);
+
+    
+    //    Two Halley iterations.
+    //    Fixed count => O(1).
+    
+    for (int i = 0; i < 2; ++i) {
+        double t = tanh(x);
+        double coth = 1.0 / t;
+        double xinv = 1.0 / x;
+        double xinv2 = xinv * xinv;
+
+        double f  = coth - xinv - a;
+
+        double csch2 = coth*coth - 1.0;
+
+        double fp  = -csch2 + xinv2;
+        double fpp = 2.0*coth*csch2 - 2.0*xinv2*xinv;
+
+        double dx = (2.0*f*fp) / (2.0*fp*fp - f*fpp);
+
+        x -= dx;
+    }
+
+    return s * x;
+}
+*/
+
+
 /*
 void poisson_1D(double h, int Nt,
                 double psi_left,

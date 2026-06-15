@@ -21,6 +21,11 @@ double *psi=NULL;
 int N_ES=0;
 char* BC=NULL;
 
+double *E_exec=NULL;// = d/dx psi(x)
+double *P=NULL; //Polarization density
+double *Pnew=NULL;
+double p=0.; //dipole moment
+
 void initialize_ES_df()
 {
   BC=malloc(5*sizeof(char));
@@ -32,6 +37,12 @@ void initialize_ES_df()
   phi=malloc(N_ES*sizeof(double));
   psi=malloc(N_ES*sizeof(double));
   
+  if(Is_polar)
+  {
+    E_exec=malloc(N*sizeof(double));
+    initialize_val(E_exec,N,0.); 
+  }
+  
   initialize_val(phi,N_ES,0.);
   initialize_val(psi,N_ES,0.);
 }
@@ -40,18 +51,24 @@ void getc1_ES()
 {
   initialize_val(phi,N_ES,0.);
   initialize_val(psi,N_ES,0.);
+  if(Is_polar)
+  initialize_val(E_exec,N,0.); 
   
   for(int i=0;i<N_ES;i++)
   {
     for(int j=0;j<Nspecies;j++)
-    phi[i]+=q[j]*lambdaB*rho[IDX(j,i)];
+    phi[i]+=q[j]*lambdaB*rho[IDX(j,i)];//phi(x) : free charge density (=\sum_{i} q_i rho_i(x))
   }
   
   if(strcmp(BC, "NN") != 0)
   poisson_1D(dx, N_ES,Vq_L,Vq_R,phi,psi,BC);
   else
-  psi_calculator(dx,N_ES,Vq_L,Vq_R,phi,psi);
-  
+  {
+    if(Is_polar)
+    psi_calculator_P(dx,N_ES,Vq_L,Vq_R,phi,psi,E_exec,P,lambdaB);
+    else
+    psi_calculator(dx,N_ES,Vq_L,Vq_R,phi,psi);
+  }
   
   /*
   FILE *t_w=fopen("../data/psi.dat","w");

@@ -23,6 +23,7 @@ extern double *rhobG;
 extern int LJ_exists;
 extern int ES_exists;
 extern int LG_exists;
+extern int Is_polar;
 extern double h_target;
 
 void read_params_geometry();

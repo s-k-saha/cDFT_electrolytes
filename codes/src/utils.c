@@ -245,6 +245,65 @@ void psi_calculator(double h,
   //printf("Q_end:%f\n",Q_end);
 }
 
+//Backward sweep-implementation of poisson solver for a Polar solvent (only works when system is net-electrically neutral and L is large enough such that charge density becomes 0 much before L)
+void psi_calculator_P(double h,
+                int Nt,
+                double psi_left,
+                double psi_right,
+                double *phi,
+                double *psi,
+                double *Eexec,
+                double *P,       
+                double lambdaB)
+{
+  double M_end=0.,Q_end=0.,P_end=0.,x;
+  
+  /*
+  //Left rectangular quadrature
+  for(int i=Nt-2;i>=0;i--)
+  {
+      x = h*i;
+
+      Q_end += phi[i]*h;
+      M_end += x*phi[i]*h;
+      P_end += P[i]*h;
+      
+      psi[i] = psi_right - (M_end - x*Q_end) - lambdaB*P_end;
+      Eexec[i] = -Q_end - lambdaB*P[i];
+  }*/
+  
+  //trapezoidal quadrature
+  for(int i = Nt-2; i >= 0; i--)
+  {
+    double x_i  = h*i;
+    double x_ip = h*(i+1);
+
+    Q_end += 0.5*h*(phi[i] + phi[i+1]);
+    M_end += 0.5*h*(x_i*phi[i] + x_ip*phi[i+1]);
+    P_end += 0.5*h*(P[i] + P[i+1]);
+
+    psi[i] = psi_right - (M_end - x_i*Q_end) - lambdaB*P_end;
+    Eexec[i] = -Q_end - lambdaB*P[i];
+  }
+
+
+  psi[Nt-1] = psi_right;
+  Eexec[Nt-1] = 0.;
+  
+  //diagonistic tool, Q(NiR)=0.0 implies solver works as desired 
+  //printf("Q_end:%f\n",Q_end);
+}
+
+double langevin(double x)
+{
+    if (fabs(x) < 1e-8) {
+        /* Series expansion near x = 0 */
+        return x/3.0 - x*x*x/45.0;
+    }
+
+    return cosh(x)/sinh(x) - 1.0/x;  /* coth(x) - 1/x */
+}
+
 
 /*
 void poisson_1D(double h, int Nt,

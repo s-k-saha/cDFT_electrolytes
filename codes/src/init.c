@@ -32,6 +32,7 @@ double *rhobG=NULL;
 int LJ_exists=0;//checks for LJ interactions in the system
 int ES_exists=0;//checks for ES interactions in the system
 int LG_exists=0;//checks for Liquid-Gas co-existence in the system
+int Is_polar=0;//checks whether solvent is polar
 double h_target=0.;//target adsorption film height (only if Liquid-Gas interface forms) (Gamma=h*(rhobL-rhobG)) see (Archer et al. 2017) https://doi.org/10.1063/1.4974832
 
 void initialize_dataframes()
@@ -42,7 +43,6 @@ void initialize_dataframes()
   Vext = malloc(Nspecies * N * sizeof(double));
   c1 = malloc(Nspecies * N * sizeof(double));
   
-  
   rhocopy = malloc(N * sizeof(double));
   c1_temp = malloc(N * sizeof(double));
   
@@ -51,6 +51,13 @@ void initialize_dataframes()
   ew=malloc(Nspecies * sizeof(double));
   mu=malloc(Nspecies * sizeof(double));
   
+  if(Is_polar)
+  {
+    P = malloc(N * sizeof(double));
+    Pnew = malloc(N * sizeof(double));
+    initialize_val(P,N,0.);
+    initialize_val(Pnew,N,0.);
+  }
   
   //allocate FMT dataframes
   initialize_FMT_omegas();
@@ -180,6 +187,7 @@ void read_params_geometry()
     if (sscanf(line, "dx=%lf", &dx) == 1) continue;
     if (sscanf(line, "alpha=%lf", &alpha) == 1) continue;
     if (sscanf(line, "Nbatch=%d", &Nbatch) == 1) continue;
+    if (sscanf(line, "Is_polar=%d", &Is_polar) == 1) continue;
   }
   fclose(fp);
   
@@ -311,6 +319,9 @@ void read_params_system()
       
       //read Vq_R
       if (sscanf(line, "Vq_R=%lf", &Vq_R) == 1) continue;
+      
+      //read p (dipole moment)
+      if (sscanf(line, "p=%lf", &p) == 1) continue;
       
       //read ew
       if (strncmp(line, "ew", 2) == 0)

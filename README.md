@@ -4,15 +4,19 @@ A C-based classical Density Functional Theory (cDFT) solver for computing equili
 
 Currently, the implementation supports **1D geometries**, where the system is assumed to be translationally invariant in the other two spatial dimensions.
 
+For a detailed description of the theoretical framework, derivations, and approximations implemented in the code, see **[Theory.pdf](Theory.pdf)**.
+
 ## Supported Interactions
 
 The solver currently includes the following interaction models:
 
 1. **Rosenfeld Fundamental Measure Theory (FMT)** for hard-sphere interactions.
+
 2. **Lennard-Jones (LJ)** interactions
 
    * ( r_{\min} = 2^{1/6}\sigma )
    * ( r_c = 2.5\sigma )
+
 3. **Electrostatic (ES) interactions**
 
    * Long-ranged Coulomb interactions.
@@ -43,9 +47,17 @@ cDFT_electrolytes/
 │
 ├── obj/            # Object files (*.o)
 │
+├── Theory.pdf      # Theoretical background and derivations
+│
 ├── Makefile
 └── README.md
 ```
+
+---
+
+## Theory
+
+The theoretical formulation implemented in this solver, including the density functional framework, interaction models, and numerical approximations, is documented in **[Theory.pdf](Theory.pdf)**.
 
 ---
 
@@ -88,3 +100,4 @@ Simulation outputs will be written to the `data/` directory.
 Additional interaction models, geometries, and numerical capabilities are planned.
 
 **More to come...**
+

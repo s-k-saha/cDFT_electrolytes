@@ -107,7 +107,7 @@ A description of the parameters is given below:
 
 1. <u>**For params_geometry.txt**</u>
    
-   * Nspecies : Number of species which have been explicitly modelled via their one body density  $\rho_i(\vec{x})$
+   * Nspecies : Number of species which have been explicitly modelled via their one body density  $\rho_i(x)$
    * N : Number of grid points
    * R : Radius of each hard-sphere (**Make sure R/dx is an integer**)
    * dx : grid resolution (impacts all numerical integrations and convolutions)
@@ -119,7 +119,7 @@ A description of the parameters is given below:
 
    * ew : $\epsilon_w$ values for each species (formatted as a comma-separated list). This corresponds to the Lennard-Jones substrate strength on each species
    * rhob : The bulk one-body densities $\rho_{\text{b,i}}$ for each species (formatted as a comma-separated list). The right end of the system is held at this density
-   * eps : Lennard-Jones interaction parameters for each pair of species (formatted as a comma-separated list). The size of the list is Nspecies*Nspecies, which is a flattened out version of a 2D array of shape (Nspecies,Nspecies). The **(i,j)**th element of the array is $\epsilon_{i,j}$
+   * eps : Lennard-Jones interaction parameters for each pair of species (formatted as a comma-separated list). The size of the list is Nspecies*Nspecies, which is a flattened out version of a 2D array of shape (Nspecies,Nspecies). The <b>(i,j)</b>th element of the array is $\epsilon_{i,j}$
    * q : electrical charge of each species, in units of elementary charge $e$ (formatted as a comma-separated list)
    * BC : string that encodes the boundary conditions for the poisson-equation. The supported boundary-conditions are:
      * DD : Dirichlet on both ends.
@@ -132,7 +132,7 @@ A description of the parameters is given below:
    * p : molecular dipole-moment
    * rhobL : co-existing liquid density of each species (formatted as a comma-separated list). **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
    * rhobG : co-existing gas density of each species (formatted as a comma-separated list). **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
-   * h_target : this fixes the adsorption. Roughly this equals $h = \frac{\Gamma_i}{\rhob_{L,i}-\rhob_{G,i}}$. **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
+   * h_target : this fixes the adsorption. Roughly this equals $h = \frac{\Gamma_i}{\rho_{L,i}-\rho_{G,i}}$. **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
 
 ---
 

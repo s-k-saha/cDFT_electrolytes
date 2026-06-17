@@ -4,7 +4,7 @@ A C-based classical Density Functional Theory (cDFT) solver for computing equili
 
 Currently, the implementation supports **1D geometries**, where the system is assumed to be translationally invariant in the other two spatial dimensions.
 
-For a detailed description of the theoretical framework, derivations, and approximations implemented in the code, see **[Theory.pdf](Theory.pdf)**.
+For a detailed description of the theoretical framework, derivations, and approximations implemented in the code, see **[theory.pdf](theory.pdf)**.
 
 ## Supported Interactions
 
@@ -47,7 +47,7 @@ cDFT_electrolytes/
 │
 ├── obj/            # Object files (*.o)
 │
-├── Theory.pdf      # Theoretical background and derivations
+├── theory.pdf      # Theoretical background and derivations
 │
 ├── Makefile
 └── README.md
@@ -57,7 +57,7 @@ cDFT_electrolytes/
 
 ## Theory
 
-The theoretical formulation implemented in this solver, including the density functional framework, interaction models, and numerical approximations, is documented in **[Theory.pdf](Theory.pdf)**.
+The theoretical formulation implemented in this solver, including the density functional framework, interaction models, and numerical approximations, is documented in **[theory.pdf](theory.pdf)**.
 
 ---
 

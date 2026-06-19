@@ -63,17 +63,11 @@ The theoretical formulation implemented in this solver, including the density fu
 
 ## Compilation
 
-For the first use on a new computer or server, compile the code by running:
-
-```bash
-make clean
-make
-```
-
-from the top-level directory:
+For the first use on a new computer or server, compile the code by running (from the top-level directory):
 
 ```bash
 cd cDFT_electrolytes
+make clean
 make
 ```
 

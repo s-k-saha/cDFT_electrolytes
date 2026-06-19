@@ -66,6 +66,7 @@ The theoretical formulation implemented in this solver, including the density fu
 For the first use on a new computer or server, compile the code by running:
 
 ```bash
+make clean
 make
 ```
 

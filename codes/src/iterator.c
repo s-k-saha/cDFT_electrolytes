@@ -65,6 +65,14 @@ void iterate()
 		rhonew[IDX(j,i)]=exp(-Vext[IDX(j,i)]+c1[IDX(j,i)]+mu[j]);
 	}
 	
+	if(Is_polar)
+	{
+	  for(int i=0;i<iend;i++)
+	    Pnew[i] = p*rho[IDX(0,i)]*langevin(p*E_exec[i]);
+	}
+	
+	
+	
 	if(LG_exists==0)
 	for(int j=0;j<Nspecies;j++)
   {
@@ -101,6 +109,11 @@ void iterate()
       }
       dev[j]*=dx;
     }
+    
+    if(Is_polar)
+    for(int i=NiR;i<iend;i++)
+      P[i] = (1-alpha)*P[i] + alpha*Pnew[i];
+    
   }
     
   
@@ -145,12 +158,22 @@ void write_rho(double elapsed, int iter)
         strcat(fname, tempname);
     }
     
+    if (Is_polar)
+    {
+       strcpy(template_name, "p%f");
+       sprintf(tempname, template_name, p);
+       strcat(fname, tempname);
+    }
+    
     if (LJ_exists)
         strcat(fname, "_LJ");
 
     if (ES_exists)
         strcat(fname, "_ES");
     
+    if (Is_polar)
+        strcat(fname, "_polar");
+        
     if (LG_exists)
         strcat(fname, "_LG");
         
@@ -174,13 +197,15 @@ void write_rho(double elapsed, int iter)
         fprintf(F, "%d %f ", i, dx * i);
 
         for (int j = 0; j < Nspecies; j++)
-            fprintf(F, "%f %f ",
+            fprintf(F, "%lf %lf ",
                     rho[IDX(j, i)],
                     c1[IDX(j, i)]);
 
         if (ES_exists)
-            fprintf(F, "%f %f ", (i <= iend) ? psi[i] : Vq_R,(i <= iend) ? phi[i] : 0.);
-
+            fprintf(F, "%lf %lf ", (i <= iend) ? psi[i] : Vq_R,(i <= iend) ? phi[i] : 0.);
+        if (Is_polar)
+            fprintf(F, "%lf %lf", (i <= iend) ? P[i] : 0.,(i <= iend) ? E_exec[i] : 0.);
+            
         fprintf(F, "\n");
     }
 

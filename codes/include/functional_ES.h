@@ -11,6 +11,11 @@ extern double *psi;
 extern int N_ES;
 extern char *BC; 
 
+extern double *E_exec;
+extern double *P;
+extern double *Pnew;
+extern double p;
+
 void initialize_ES_df();
 void getc1_ES();
 

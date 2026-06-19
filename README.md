@@ -4,15 +4,19 @@ A C-based classical Density Functional Theory (cDFT) solver for computing equili
 
 Currently, the implementation supports **1D geometries**, where the system is assumed to be translationally invariant in the other two spatial dimensions.
 
+For a detailed description of the theoretical framework, derivations, and approximations implemented in the code, see **[theory.pdf](theory.pdf)**.
+
 ## Supported Interactions
 
 The solver currently includes the following interaction models:
 
 1. **Rosenfeld Fundamental Measure Theory (FMT)** for hard-sphere interactions.
+
 2. **Lennard-Jones (LJ)** interactions
 
-   * ( r_{\min} = 2^{1/6}\sigma )
-   * ( r_c = 2.5\sigma )
+   * ( $r_{\min} = 2^{1/6}\sigma$ )
+   * ( $r_c = 2.5\sigma$ )
+
 3. **Electrostatic (ES) interactions**
 
    * Long-ranged Coulomb interactions.
@@ -43,24 +47,27 @@ cDFT_electrolytes/
 │
 ├── obj/            # Object files (*.o)
 │
+├── theory.pdf      # Theoretical background and derivations
+│
 ├── Makefile
 └── README.md
 ```
 
 ---
 
+## Theory
+
+The theoretical formulation implemented in this solver, including the density functional framework, interaction models, and numerical approximations, is documented in **[theory.pdf](theory.pdf)**.
+
+---
+
 ## Compilation
 
-For the first use on a new computer or server, compile the code by running:
-
-```bash
-make
-```
-
-from the top-level directory:
+For the first use on a new computer or server, compile the code by running (from the top-level directory):
 
 ```bash
 cd cDFT_electrolytes
+make clean
 make
 ```
 
@@ -83,8 +90,50 @@ Simulation outputs will be written to the `data/` directory.
 
 ---
 
+## Modifying paramater files
+
+This will serve as a guide how to properly modify the parameter files to generate output without breaking the code.
+
+1. **DO NOT** change the order of the parameters in the files.
+
+2. Assign values to the parameters such that system is consistent.    
+
+A description of the parameters is given below:
+
+1. <u>**For params_geometry.txt**</u>
+   
+   * Nspecies : Number of species which have been explicitly modelled via their one body density  $\rho_i(x)$
+   * N : Number of grid points
+   * R : Radius of each hard-sphere (**Make sure R/dx is an integer**)
+   * dx : grid resolution (impacts all numerical integrations and convolutions)
+   * alpha : picard-mixing parameter (**keep low ~ 0.01-0.1**)
+   * Nbatch : Number of convergence iterations executed between two consecutive writes to the output datafile
+   * Is_polar : assign **1** if the first species is polar, or **0** if the first species is non-polar
+
+2. <u>**For params_system.txt**</u>
+
+   * ew : $\epsilon_{w,i}$ values for each species (formatted as a comma-separated list). This corresponds to the Lennard-Jones substrate strength on each species
+   * rhob : The bulk one-body densities $\rho_{\text{b,i}}$ for each species (formatted as a comma-separated list). The right end of the system is held at this density
+   * eps : Lennard-Jones interaction parameters for each pair of species (formatted as a comma-separated list). The size of the list is Nspecies*Nspecies, which is a flattened out version of a 2D array of shape (Nspecies,Nspecies). The <b>(i,j)</b>-th element of the array is $\epsilon_{i,j}$
+   * q : electrical charge of each species, in units of elementary charge $e$ (formatted as a comma-separated list)
+   * BC : string that encodes the boundary conditions for the poisson-equation. The supported boundary-conditions are:
+     * DD : Dirichlet on both ends.
+     * DN : Dirichlet on left end and Neumann on right end.
+     * ND : Neumann on left end and Dirichlet on right end.
+     * NN : Neumann on both ends.
+   * lambdaB : Bjerrum length $\lambda_B$, in units of molecular hard-sphere diameter ($\sigma=2R$)
+   * Vq_L : boundary condition value on the left end ($\phi(0)$ if left end is Dirichlet or $\phi'(0)$ if left end is Neumann)
+   * Vq_R : boundary condition value on the right end ($\phi(L)$ if right end is Dirichlet or $\phi'(L)$ if righ end is Neumann)
+   * p : molecular dipole-moment
+   * rhobL : co-existing liquid density of each species (formatted as a comma-separated list). **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
+   * rhobG : co-existing gas density of each species (formatted as a comma-separated list). **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
+   * h_target : this fixes the adsorption. Roughly this equals $h = \frac{\Gamma_i}{\rho_{L,i}-\rho_{G,i}}$. **Only keep this uncommented if you want liquid-gas co-existence with fixed adsorption condition**
+
+---
+
 ## Future Development
 
 Additional interaction models, geometries, and numerical capabilities are planned.
 
 **More to come...**
+

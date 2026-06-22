@@ -26,13 +26,14 @@ extern int LG_exists;
 extern int Is_polar;
 extern double h_target;
 
+int file_exists();
 void read_params_geometry();
 void initialize_dataframes();
 void initialize_vars();
 void initialize_Vext();
 void initialize_rho();
 void read_params_system();
-
+void create_outfname();
 
 
 #endif

@@ -14,6 +14,9 @@ extern double R;
 extern int NiR; 
 extern double sigma;
 
+extern int count_iter;
+extern char *outfname;
+
 #define IDX(i,j) ((i)*N + (j))
 
 

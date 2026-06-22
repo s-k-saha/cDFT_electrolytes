@@ -103,7 +103,7 @@ void iterate()
         
       for(int i=NiR;i<iend;i++)
       {
-		    rhonew[IDX(j,i)]=factor*(rhonew[IDX(j,i)]-rhobG[j])+ rhobG[j];
+		    rhonew[IDX(j,i)] = factor*(rhonew[IDX(j,i)]-rhobG[j])+ rhobG[j];
 		    dev[j]+=fabs(rhonew[IDX(j,i)]-rho[IDX(j,i)]);
 		    rho[IDX(j,i)]=rhonew[IDX(j,i)];
       }
@@ -115,73 +115,23 @@ void iterate()
       P[i] = (1-alpha)*P[i] + alpha*Pnew[i];
     
   }
-    
+   
+  count_iter+=1; 
   
 }
 
 
-void write_rho(double elapsed, int iter)
+void write_rho(double elapsed)
 {
-    char fname[1024];
     char outname[1024];
+    char fname[1024];
     char tmpfile[1100];
     char template_name[250] = "rhob%d_%f";
     char tempname[256];
-
-    /* Construct output filename */
-    sprintf(fname, "../data/rho1Ddx%fL%f", dx, Lx);
-
-    for (int i = 0; i < Nspecies; i++)
-    {
-        sprintf(tempname, template_name, i + 1, rhob[i]);
-        strcat(fname, tempname);
-    }
-
-    strcpy(template_name, "ew%d_%f");
-    for (int i = 0; i < Nspecies; i++)
-    {
-        sprintf(tempname, template_name, i + 1, ew[i]);
-        strcat(fname, tempname);
-    }
-
-    if (ES_exists)
-    {
-        strcpy(template_name, "lambdaB%fVq_L%fVq_R%fBC%s");
-        sprintf(tempname, template_name, lambdaB, Vq_L,Vq_R, BC);
-        strcat(fname, tempname);
-    }
     
-    if (LG_exists)
-    {
-        strcpy(template_name, "h_target%f");
-        sprintf(tempname, template_name, h_target);
-        strcat(fname, tempname);
-    }
-    
-    if (Is_polar)
-    {
-       strcpy(template_name, "p%f");
-       sprintf(tempname, template_name, p);
-       strcat(fname, tempname);
-    }
-    
-    if (LJ_exists)
-        strcat(fname, "_LJ");
-
-    if (ES_exists)
-        strcat(fname, "_ES");
-    
-    if (Is_polar)
-        strcat(fname, "_polar");
-        
-    if (LG_exists)
-        strcat(fname, "_LG");
-        
-    strcat(fname, ".dat");
-    
-    strcpy(outname,fname);
+    strcpy(outname,outfname);
     /* Temporary file name */
-    snprintf(tmpfile, sizeof(tmpfile), "%s.tmp", fname);
+    snprintf(tmpfile, sizeof(tmpfile), "%s.tmp", outfname);
 
     /* Open temporary file */
     FILE *F = fopen(tmpfile, "w");
@@ -211,7 +161,7 @@ void write_rho(double elapsed, int iter)
 
     fprintf(F,
             "------------------\n%d x %d cycles time: %f s\n",
-            Nbatch, iter, elapsed);
+            Nbatch, count_iter/Nbatch, elapsed);
 
     fname[0] = '\0';
     strcpy(template_name, "mu[%d] :%f; ");

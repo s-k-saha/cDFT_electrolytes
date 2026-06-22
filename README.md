@@ -63,11 +63,16 @@ The theoretical formulation implemented in this solver, including the density fu
 
 ## Compilation
 
-For the first use on a new computer or server, compile the code by running (from the top-level directory):
+For the first use on a new computer or server, compile the code by running:
+
+```bash
+make
+```
+
+from the top-level directory:
 
 ```bash
 cd cDFT_electrolytes
-make clean
 make
 ```
 
@@ -112,7 +117,7 @@ A description of the parameters is given below:
 
 2. <u>**For params_system.txt**</u>
 
-   * ew : $\epsilon_{w,i}$ values for each species (formatted as a comma-separated list). This corresponds to the Lennard-Jones substrate strength on each species
+   * ew : $\epsilon_w$ values for each species (formatted as a comma-separated list). This corresponds to the Lennard-Jones substrate strength on each species
    * rhob : The bulk one-body densities $\rho_{\text{b,i}}$ for each species (formatted as a comma-separated list). The right end of the system is held at this density
    * eps : Lennard-Jones interaction parameters for each pair of species (formatted as a comma-separated list). The size of the list is Nspecies*Nspecies, which is a flattened out version of a 2D array of shape (Nspecies,Nspecies). The <b>(i,j)</b>-th element of the array is $\epsilon_{i,j}$
    * q : electrical charge of each species, in units of elementary charge $e$ (formatted as a comma-separated list)

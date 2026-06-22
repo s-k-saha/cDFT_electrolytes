@@ -32,8 +32,8 @@ int main(int argc,char *argv[])
 			iterate();
 		end = clock();
 		elapsed = (double)(end - start) / CLOCKS_PER_SEC;
-		write_rho(elapsed,i+1);
-		printf("%d x %d batches; time: %f s; max dev: %lf\n",i+1,Nbatch,elapsed,getMax(dev,Nspecies));
+		write_rho(elapsed);
+		printf("%d x %d batches; time: %f s; max dev: %lf\n",count_iter/Nbatch,Nbatch,elapsed,getMax(dev,Nspecies));
 	}
 
 }

@@ -6,6 +6,6 @@ extern double *dev;
 void initialize_iterator_df();
 void iterate();
 void rhocpy();
-void write_rho(double,int);
+void write_rho(double);
 
 #endif

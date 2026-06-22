@@ -153,6 +153,7 @@ void initialize_rho()
 
 void initialize_vars()
 {
+  count_iter=0;
   //initialize with system param values ew and rhob
   read_params_system();
   
@@ -171,8 +172,134 @@ void initialize_vars()
   //initialize c1_bulk
   for(int i=0;i<Nspecies;i++)
   c1_bulk[i]=-mu[i]+log(rhob[i]);
+  
+  create_outfname();
+  
+  file_exists();
 }
 
+void create_outfname()
+{
+  outfname=malloc((1024)*sizeof(char));
+  
+  char template_name[250] = "rhob%d_%f";
+  char tempname[256];
+  
+  /* Construct output filename */
+  sprintf(outfname, "../data/rho1Ddx%fL%f", dx, Lx);
+
+  for (int i = 0; i < Nspecies; i++)
+  {
+      sprintf(tempname, template_name, i + 1, rhob[i]);
+      strcat(outfname, tempname);
+  }
+
+  strcpy(template_name, "ew%d_%f");
+  for (int i = 0; i < Nspecies; i++)
+  {
+      sprintf(tempname, template_name, i + 1, ew[i]);
+      strcat(outfname, tempname);
+  }
+
+  if (ES_exists)
+  {
+      strcpy(template_name, "lambdaB%fVq_L%fVq_R%fBC%s");
+      sprintf(tempname, template_name, lambdaB, Vq_L,Vq_R, BC);
+      strcat(outfname, tempname);
+  }
+  
+  if (LG_exists)
+  {
+      strcpy(template_name, "h_target%f");
+      sprintf(tempname, template_name, h_target);
+      strcat(outfname, tempname);
+  }
+  
+  if (Is_polar)
+  {
+     strcpy(template_name, "p%f");
+     sprintf(tempname, template_name, p);
+     strcat(outfname, tempname);
+  }
+  
+  if (LJ_exists)
+      strcat(outfname, "_LJ");
+
+  if (ES_exists)
+      strcat(outfname, "_ES");
+  
+  if (Is_polar)
+      strcat(outfname, "_polar");
+      
+  if (LG_exists)
+      strcat(outfname, "_LG");
+      
+  strcat(outfname, ".dat");
+  
+}
+
+int file_exists()
+{
+    char template_name[250] = "rhob%d_%f";
+    char tempname[256];
+    
+    FILE *F = fopen(outfname, "r");
+    if (F == NULL)
+    {
+      printf("no ouput file found\n");
+      return 0;
+    }
+  
+    printf("ouput file found,reading from it\n");
+    char line[5000];
+    int i=0;
+    int ncycles;
+    double elapsed_time;
+    while ( (fgets(line, sizeof(line), F)) && (i<N-1) )
+    {
+       /* Skip footer or separator lines */
+          if (!(line[0] >= '0' && line[0] <= '9'))
+              continue;
+
+          char *p = line;
+          
+          i=atoi(line);
+          
+          /* read row index */
+          strtol(p, &p, 10);
+          strtod(p, &p);
+
+          double x;
+          int pos = 0;
+
+          while ((pos/2) < Nspecies) 
+          {   
+
+              x = strtod(p, &p);
+
+              if (pos % 2 == 0) 
+              {   // even positions
+                  rho[IDX((pos/2),i)]=x;
+              }
+
+              pos++;
+          }
+
+          //printf("\n%d rows read\n",i);
+    }
+    
+    while (fgets(line, sizeof(line), F))
+    {
+      if (sscanf(line, "%d x %d cycles time: %lf s\n",&i, &ncycles, &elapsed_time) == 3) 
+      {
+          count_iter=ncycles*Nbatch;
+          //printf("%d cycles found\n", ncycles);
+      }
+    }
+    
+    fclose(F);
+    return 1;
+}
 
 
 void read_params_geometry()

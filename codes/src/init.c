@@ -130,11 +130,11 @@ void initialize_rho()
   {
     int h_target_N = (int)(h_target/dx);
     //left half init wil rhoL_bulk*exp(-Vext)
-    for(int i=NiR;i<h_target_N;i++)
+    for(int i=NiR;i<h_target_N+NiR;i++)
     {
       for(int j=0;j<Nspecies;j++)
         {
-          rho[IDX(j,i)]=rhobL[j]*exp(-Vext[IDX(j,i)]);
+          rho[IDX(j,i)]=rhobL[j];//*exp(-Vext[IDX(j,i)]);
         }
     }
     
@@ -143,7 +143,7 @@ void initialize_rho()
     {
       for(int j=0;j<Nspecies;j++)
         {
-          rho[IDX(j,i)]=rhobG[j]*exp(-Vext[IDX(j,i)]);
+          rho[IDX(j,i)]=rhobG[j];//*exp(-Vext[IDX(j,i)]);
         }
     }
     
